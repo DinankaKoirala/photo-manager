@@ -1,46 +1,50 @@
 import os
-import io
 import requests
-from googleapiclient.http import MediaIoBaseDownload
 
 DOWNLOAD_DIR = "downloads"
 
-def get_photos_list(service):
+def get_photos_list(creds):
     photos = []
     page_token = None
+    headers = {"Authorization": f"Bearer {creds.token}"}
 
     while True:
-        response = service.files().list(
-            q="mimeType contains 'image/' or mimeType contains 'video/'",
-            fields = "nextPageToken, files(id, name, mimeType, createdTime, thumbnailLink, webContentLink)",
-            pageSize = 50,
-            pageToken = page_token
-        ).execute()
+        params = {"pageSize": 50}
+        if page_token:
+            params["pageToken"] = page_token
 
-        photos.extend(response.get("files", []))
-        page_token = response.get("nextPageToken")
+        response = requests.get(
+            "https://photoslibrary.googleapis.com/v1/mediaItems",
+            headers=headers,
+            params=params
+        )
+
+        data = response.json()
+        print("Status code:", response.status_code)
+        print("API response:", data)
+        print("Token:", creds.token[:20], "...")
+        items = data.get("mediaItems", [])
+        photos.extend(items)
+        page_token = data.get("nextPageToken")
 
         if not page_token:
             break
-    return photos
 
-def download_file(service, file_id, file_name):
+    return photos 
+
+
+def download_file(creds, base_url, file_name):
     os.makedirs(DOWNLOAD_DIR, exist_ok=True)
     file_path = os.path.join(DOWNLOAD_DIR, file_name)
 
-    if os.path.exist(file_path):
+    if os.path.exists(file_path):
         return file_path
-
-    request = service.files().get_media(fileId = file_id)
-    buffer = io.BytesIO()
-    downloader = MediaIoBaseDownload(buffer, request)
-
-    done = False
-    while not done:
-        status, done = downloader.next_chunk()
+    
+    headers = {"Authorization": f"Bearer {creds.token}"}
+    download_url = base_url + "=d"
+    response = requests.get(download_url, headers=headers)
 
     with open(file_path, "wb") as f:
-        f.write(buffer.getValue())
-    
-    return file_path
+        f.write(response.content)
 
+    return file_path

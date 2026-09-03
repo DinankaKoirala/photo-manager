@@ -2,17 +2,15 @@ import os
 import pickle
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-from googleapiclient.discovery import build 
 
 
 SCOPES = [
-    "https://www.googleapis.com/auth/drive.readonly",
     "https://www.googleapis.com/auth/photoslibrary.readonly",
 ]
 
 TOKENS_DIR = "tokens"
 
-def get_service(account_name):
+def get_credentials(account_name):
     os.makedirs(TOKENS_DIR, exist_ok=True)
     token_path = os.path.join(TOKENS_DIR, f"{account_name}.pkl")
     creds = None
@@ -31,9 +29,7 @@ def get_service(account_name):
 
             with open(token_path, "wb") as f:
                 pickle.dump(creds, f)
-
-    service = build("drive", "v3", credentials=creds)
-    return service, creds
+    return creds
 
 def list_accounts():
     if not os.path.exists(TOKENS_DIR):

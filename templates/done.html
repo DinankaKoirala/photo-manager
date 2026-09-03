@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Review Deletions</title>
+    <title>Downloaded Photos</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -20,28 +20,19 @@
             margin-bottom: 30px;
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 10px;
+        .list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
             margin-bottom: 30px;
         }
 
-        .photo-item img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
+        .item {
+            background: #2a2a2a;
+            padding: 12px 20px;
             border-radius: 10px;
-            border: 2px solid #ff4444;
-        }
-
-        .photo-item p {
-            font-size: 11px;
-            color: #888;
-            margin-top: 4px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            font-size: 14px;
+            color: #ccc;
         }
 
         .empty {
@@ -50,53 +41,32 @@
             font-size: 18px;
         }
 
-        .actions {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
         .btn {
             padding: 15px 30px;
             border-radius: 50px;
             font-size: 16px;
             font-weight: bold;
             text-decoration: none;
-            border: none;
-            cursor: pointer;
+            background: #333;
+            color: white;
+            display: inline-block;
         }
-
-        .confirm { background: #ff4444; color: white; }
-        .cancel { background: #333; color: white; text-decoration: none; }
     </style>
 </head>
 <body>
-    <h1>Review Deletions</h1>
+    <h1>Downloaded Photos</h1>
 
-    {% if deleted %}
-        <p class="subtitle">{{ deleted|length }} photos marked for deletion</p>
-
-        <div class="grid">
-            {% for photo in deleted %}
-                <div class="photo-item">
-                    <img src="{{ photo.thumbnailLink }}" alt="{{ photo.name }}">
-                    <p>{{ photo.name }}</p>
-                </div>
+    {% if downloaded %}
+        <p class="subtitle">{{ downloaded|length }} photos saved to your downloads folder</p>
+        <div class="list">
+            {% for name in downloaded %}
+                <div class="item">✓ {{ name }}</div>
             {% endfor %}
         </div>
-
-        <div class="actions">
-            <form method="POST" action="/confirm_delete">
-                <button class="btn confirm" type="submit">
-                    🗑 Delete {{ deleted|length }} photos permanently
-                </button>
-            </form>
-            <a href="/" class="btn cancel">Cancel</a>
-        </div>
-
     {% else %}
-        <p class="empty">No photos marked for deletion!</p>
-        <a href="/" class="btn cancel" style="display:inline-block; margin-top: 20px;">Back to Home</a>
+        <p class="empty">No photos downloaded this session.</p>
     {% endif %}
+
+    <a href="/" class="btn">Back to Home</a>
 </body>
 </html>

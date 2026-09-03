@@ -69,7 +69,7 @@
             font-weight: bold;
         }
 
-        .delete { background: #ff4444; color: white; }
+        .skip { background: #ff4444; color: white; }
         .keep { background: #44ff88; color: black; }
 
         .hint {
@@ -89,17 +89,17 @@
 
         <div class="photo-card" id="card">
             {% if 'video' in photo.mimeType %}
-                <video src="{{ photo.thumbnailLink }}" controls></video>
+                <video src="{{ photo.baseUrl }}" controls></video>
             {% else %}
-                <img src="{{ photo.thumbnailLink }}" alt="{{ photo.name }}">
+                <img src="{{ photo.baseUrl }}" alt="{{ photo.filename }}">
             {% endif %}
-            <p class="photo-name">{{ photo.name }}</p>
-            <p class="photo-date">{{ photo.createdTime }}</p>
+            <p class="photo-name">{{ photo.filename }}</p>
+            <p class="photo-date">{{ photo.mediaMetadata.creationTime }}</p>
         </div>
 
         <div class="buttons">
-            <a href="/delete" class="btn delete">✕ Delete</a>
-            <a href="/keep" class="btn keep">✓ Keep</a>
+            <a href="/skip" class="btn skip">✕ Skip</a>
+            <a href="/keep" class="btn keep">↓ Download</a>
         </div>
 
         <p class="hint">← → arrow keys or swipe</p>
@@ -121,12 +121,12 @@
             let endX = e.changedTouches[0].clientX;
             let diff = endX - startX;
             if (diff > 80) window.location.href = "/keep";
-            else if (diff < -80) window.location.href = "/delete";
+            else if (diff < -80) window.location.href = "/skip";
         });
 
         document.addEventListener("keydown", function(e) {
             if (e.key === "ArrowRight") window.location.href = "/keep";
-            if (e.key === "ArrowLeft") window.location.href = "/delete";
+            if (e.key === "ArrowLeft") window.location.href = "/skip";
         });
     </script>
 </body>
