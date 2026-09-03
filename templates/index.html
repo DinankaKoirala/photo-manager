@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Photo Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: sans-serif;
+            background: #1a1a1a;
+            color: white;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h1 { font-size: 32px; margin-bottom: 10px; }
+
+        .subtitle { color: #888; margin-bottom: 40px; }
+
+        .accounts {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+
+        .account-btn {
+            background: #2a2a2a;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 16px;
+            border: 1px solid #444;
+        }
+
+        .account-btn:hover { background: #3a3a3a; }
+
+        .add-account {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input[type="text"] {
+            padding: 12px 20px;
+            border-radius: 50px;
+            border: 1px solid #444;
+            background: #2a2a2a;
+            color: white;
+            font-size: 16px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .add-btn {
+            background: #44ff88;
+            color: black;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Photo Manager</h1>
+        <p class="subtitle">Clean up your Google photos</p>
+
+        {% if accounts %}
+            <div class="accounts">
+                {% for account in accounts %}
+                    <a href="/photos/{{ account }}" class="account-btn">
+                        📁 {{ account }}
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="color: #888; margin-bottom: 40px;">No accounts connected yet</p>
+        {% endif %}
+
+        <div class="add-account">
+            <input type="text" id="accountName" placeholder="e.g. personal, college, work" />
+            <button class="add-btn" onclick="connectAccount()">+ Connect Google Account</button>
+        </div>
+    </div>
+
+    <script>
+        function connectAccount() {
+            const name = document.getElementById("accountName").value.trim();
+            if (!name) {
+                alert("Please enter a name for this account");
+                return;
+            }
+            window.location.href = "/login/" + name;
+        }
+    </script>
+</body>
+</html>

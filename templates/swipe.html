@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Swipe Photos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: sans-serif;
+            background: #1a1a1a;
+            color: white;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .progress {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .photo-card {
+            background: #2a2a2a;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            cursor: grab;
+        }
+
+        .photo-card img, .photo-card video {
+            width: 100%;
+            max-height: 60vh;
+            object-fit: cover;
+        }
+
+        .photo-name {
+            padding: 10px;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .photo-date {
+            padding: 0 10px 10px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .delete { background: #ff4444; color: white; }
+        .keep { background: #44ff88; color: black; }
+
+        .hint {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div id="focustrap" tabindex="0" style="outline:none; position:fixed; width:100%; height:100%; top:0; left:0; z-index:-1;"></div>
+
+    <div class="container">
+        <div class="progress">
+            {{ current + 1 }} of {{ total }}
+        </div>
+
+        <div class="photo-card" id="card">
+            {% if 'video' in photo.mimeType %}
+                <video src="{{ photo.thumbnailLink }}" controls></video>
+            {% else %}
+                <img src="{{ photo.thumbnailLink }}" alt="{{ photo.name }}">
+            {% endif %}
+            <p class="photo-name">{{ photo.name }}</p>
+            <p class="photo-date">{{ photo.createdTime }}</p>
+        </div>
+
+        <div class="buttons">
+            <a href="/delete" class="btn delete">✕ Delete</a>
+            <a href="/keep" class="btn keep">✓ Keep</a>
+        </div>
+
+        <p class="hint">← → arrow keys or swipe</p>
+    </div>
+
+    <script>
+        window.onload = function() {
+            document.getElementById("focustrap").focus();
+        };
+
+        const card = document.getElementById("card");
+        let startX = 0;
+
+        card.addEventListener("touchstart", function(e) {
+            startX = e.touches[0].clientX;
+        });
+
+        card.addEventListener("touchend", function(e) {
+            let endX = e.changedTouches[0].clientX;
+            let diff = endX - startX;
+            if (diff > 80) window.location.href = "/keep";
+            else if (diff < -80) window.location.href = "/delete";
+        });
+
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "ArrowRight") window.location.href = "/keep";
+            if (e.key === "ArrowLeft") window.location.href = "/delete";
+        });
+    </script>
+</body>
+</html>
